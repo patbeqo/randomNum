@@ -16,7 +16,7 @@ export const RangeSelector = ({ onContinue }: RangeSelectorProps) => {
     <div
       style={{
         margin: "64px auto",
-        width: "400px",
+        maxWidth: "400px",
       }}
     >
       <h3 style={{ textAlign: "center" }}>
