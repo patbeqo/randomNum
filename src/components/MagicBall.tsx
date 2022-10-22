@@ -28,7 +28,7 @@ export const MagicBall = ({ onBack, range }: MagicBallProps) => {
 
       setNumbers(tmp);
     }
-  }, []);
+  }, [range.start, range.end]);
 
   const removeNumber = (numToRemove: number) => {
     setNumbers((prev) => prev.filter((num) => num !== numToRemove));
