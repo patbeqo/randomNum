@@ -8,12 +8,14 @@ function App() {
     end: number | undefined;
   }>({ start: undefined, end: undefined });
 
+  const hasSession = localStorage.getItem("numbers");
+
   useEffect(() => {
     const data = localStorage.getItem("range");
-    console.log(data);
     if (data != null) {
       setRange(JSON.parse(data));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onRangeSelected = (start: number, end: number) => {
@@ -23,17 +25,16 @@ function App() {
 
   const onBackSelected = () => {
     localStorage.removeItem("range");
+    localStorage.removeItem("numbers");
     setRange({ start: undefined, end: undefined });
   };
-
-  useEffect(() => console.log(range))
 
   return (
     <div className="App">
       <h1 style={{ textAlign: "center", color: "purple" }}>
         Patrik's magic number ball
       </h1>
-      {range.start && range.end ? (
+      {hasSession || (range.start && range.end) ? (
         <MagicBall range={range} onBack={onBackSelected} />
       ) : (
         <RangeSelector onContinue={onRangeSelected} />

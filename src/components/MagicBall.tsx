@@ -17,22 +17,40 @@ export const MagicBall = ({ onBack, range }: MagicBallProps) => {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const [numbers, setNumbers] = useState<number[]>([]);
-  const [numberToDisplay, setNumberToDisplay] = useState<number>(0);
+  const [numberToDisplay, setNumberToDisplay] = useState<number | undefined>();
 
   useEffect(() => {
-    if (range.start && range.end) {
-      let tmp = [];
-      for (let i = range.start; i <= range.end; i++) {
-        tmp.push(i);
-      }
+    const data = localStorage.getItem("numbers");
+    if (data != null) {
+      setNumbers(Object.values(JSON.parse(data)));
+    } else {
+      if (range.start && range.end) {
+        let tmp = [];
+        for (let i = range.start; i <= range.end; i++) {
+          tmp.push(i);
+        }
 
-      setNumbers(tmp);
+        setNumbers(tmp);
+      }
     }
-  }, [range.start, range.end]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const spinBall = () => {
+    setIsSelected(false);
+    setIsSpinning(true);
+    randomnlyChoose();
+    setIsSpinning(false);
+  };
 
   const removeNumber = (numToRemove: number) => {
-    setNumbers((prev) => prev.filter((num) => num !== numToRemove));
-    setNumberToDisplay(0);
+    setNumbers((prev) => {
+      const newNums = prev.filter((num) => num !== numToRemove);
+      localStorage.setItem("numbers", JSON.stringify(newNums));
+      return newNums;
+    });
+    setNumberToDisplay(undefined);
     setIsSelected(false);
   };
 
@@ -113,6 +131,7 @@ export const MagicBall = ({ onBack, range }: MagicBallProps) => {
                 style={{
                   width: "50px",
                   height: "50px",
+                  borderRadius: "50%",
                   backgroundColor: "white",
                   position: "relative",
                   top: "42px",
@@ -135,7 +154,7 @@ export const MagicBall = ({ onBack, range }: MagicBallProps) => {
             >{`Number is: ${numberToDisplay}`}</h3>
             <Box textAlign="center">
               <Button
-                onClick={() => removeNumber(numberToDisplay)}
+                onClick={() => removeNumber(numberToDisplay!)}
                 color="secondary"
                 variant="contained"
               >
@@ -147,12 +166,7 @@ export const MagicBall = ({ onBack, range }: MagicBallProps) => {
         <Box textAlign="center">
           <Button
             style={{ height: "48px", width: "100px" }}
-            onClick={() => {
-              setIsSelected(false);
-              setIsSpinning(true);
-              randomnlyChoose();
-              setIsSpinning(false);
-            }}
+            onClick={spinBall}
             disabled={isSpinning}
             variant="contained"
             color="success"
