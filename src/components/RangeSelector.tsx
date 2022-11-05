@@ -1,16 +1,42 @@
-import React, { useState } from "react";
+import { useState, useContext, ChangeEvent } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import EastIcon from "@mui/icons-material/East";
+import { useMagicBallDispatcher, magicBallContext } from "./magicBallContext";
+import { ExcludeNumbers } from "./ExcludeNumbers";
 
-interface RangeSelectorProps {
-  onContinue: (start: number, end: number) => void;
+interface IRangeSelector {
+  goNext: () => void;
 }
 
-export const RangeSelector = ({ onContinue }: RangeSelectorProps) => {
-  const [startingNumber, setStartingNumber] = useState<number>(1);
-  const [endingNumber, setEndingNumber] = useState<number>(10);
+export const RangeSelector = ({ goNext }: IRangeSelector) => {
   const [error, setError] = useState<string | undefined>();
+  const { setRange } = useMagicBallDispatcher();
+  const {
+    range: { start, end },
+  } = useContext(magicBallContext);
+
+  const setStartNumber = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setError(undefined);
+    setRange(parseInt(e.target.value), end);
+  };
+
+  const setEndNumber = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setError(undefined);
+    setRange(start, parseInt(e.target.value));
+  };
+
+  const handleContinue = () => {
+    if (start >= end) {
+      setError("Error: starting number should be less than ending number");
+    } else {
+      goNext();
+    }
+  };
 
   return (
     <div
@@ -31,11 +57,8 @@ export const RangeSelector = ({ onContinue }: RangeSelectorProps) => {
               min: 1,
             },
           }}
-          value={startingNumber}
-          onChange={(e) => {
-            setError(undefined);
-            setStartingNumber(parseInt(e.target.value));
-          }}
+          value={start}
+          onChange={setStartNumber}
           label="start"
         />
         <TextField
@@ -45,11 +68,8 @@ export const RangeSelector = ({ onContinue }: RangeSelectorProps) => {
               min: 2,
             },
           }}
-          value={endingNumber}
-          onChange={(e) => {
-            setError(undefined);
-            setEndingNumber(parseInt(e.target.value));
-          }}
+          value={end}
+          onChange={setEndNumber}
           label="end"
         />
       </div>
@@ -57,20 +77,13 @@ export const RangeSelector = ({ onContinue }: RangeSelectorProps) => {
         <p style={{ color: "red", marginBottom: "16px" }}>{error}</p>
       ) : undefined}
 
+      <ExcludeNumbers />
       <Button
         style={{ width: "100%", height: "48px" }}
         variant="outlined"
         endIcon={<EastIcon />}
-        disabled={error ? true : false}
-        onClick={() => {
-          if (startingNumber >= endingNumber) {
-            setError("Error: starting number should be less than ending number");
-          } else if (isNaN(startingNumber) || isNaN(endingNumber)) {
-            setError("Error: invalid number input");
-          } else {
-            onContinue(startingNumber, endingNumber);
-          }
-        }}
+        disabled={!!error}
+        onClick={handleContinue}
       >
         Continue
       </Button>

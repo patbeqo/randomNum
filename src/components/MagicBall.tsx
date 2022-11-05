@@ -1,41 +1,29 @@
-import React, { useState, useEffect } from "react";
+import { useState, useContext } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import WestIcon from "@mui/icons-material/West";
+import { BackButton } from "./BackButton";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useMagicBallDispatcher, magicBallContext } from "./magicBallContext";
 
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-interface MagicBallProps {
-  onBack: () => void;
-  range: { start: number | undefined; end: number | undefined };
+interface IMagicBall {
+  goBack: () => void;
 }
 
-export const MagicBall = ({ onBack, range }: MagicBallProps) => {
+export const MagicBall = ({ goBack }: IMagicBall) => {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [isSelected, setIsSelected] = useState<boolean>(false);
-  const [numbers, setNumbers] = useState<number[]>([]);
   const [numberToDisplay, setNumberToDisplay] = useState<number | undefined>();
+  const { clearData, setNumbers } = useMagicBallDispatcher();
+  const { numbers } = useContext(magicBallContext);
 
-  useEffect(() => {
-    const data = localStorage.getItem("numbers");
-    if (data != null) {
-      setNumbers(Object.values(JSON.parse(data)));
-    } else {
-      if (range.start && range.end) {
-        let tmp = [];
-        for (let i = range.start; i <= range.end; i++) {
-          tmp.push(i);
-        }
-
-        setNumbers(tmp);
-      }
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleBackClick = () => {
+    clearData();
+    goBack();
+  };
 
   const spinBall = () => {
     setIsSelected(false);
@@ -45,51 +33,36 @@ export const MagicBall = ({ onBack, range }: MagicBallProps) => {
   };
 
   const removeNumber = (numToRemove: number) => {
-    setNumbers((prev) => {
-      const newNums = prev.filter((num) => num !== numToRemove);
-      localStorage.setItem("numbers", JSON.stringify(newNums));
-      return newNums;
-    });
+    const newNums = numbers.filter((num) => num !== numToRemove);
+    setNumbers(newNums);
     setNumberToDisplay(undefined);
     setIsSelected(false);
   };
 
   const randomnlyChoose = () => {
-    const tmp = setInterval(() => {
+    const interval = setInterval(() => {
       setNumberToDisplay(numbers[getRandomInt(numbers.length)]);
     }, 10);
 
     setTimeout(() => {
-      clearInterval(tmp);
+      clearInterval(interval);
       setIsSelected(true);
     }, numbers.length * 100);
   };
 
-  if (!range.start || !range.end) {
-    return (
-      <p style={{ color: "red" }}>
-        Error, invalid range selected. Please go back.
-      </p>
-    );
-  }
-
   if (numbers.length === 0) {
     return (
-      <div>
-        <Button variant="outlined" startIcon={<WestIcon />} onClick={onBack}>
-          Back
-        </Button>
+      <>
+        <BackButton handleBackClick={handleBackClick} />
         <h3 style={{ textAlign: "center" }}>Thank you for playing!</h3>
-      </div>
+      </>
     );
   }
 
   if (numbers) {
     return (
-      <div>
-        <Button variant="outlined" startIcon={<WestIcon />} onClick={onBack}>
-          Back
-        </Button>
+      <>
+        <BackButton handleBackClick={handleBackClick} />
         <div>
           <p style={{ textAlign: "center" }}>{`Remaining numbers: ${numbers.map(
             (number) => number
@@ -171,10 +144,10 @@ export const MagicBall = ({ onBack, range }: MagicBallProps) => {
             variant="contained"
             color="success"
           >
-            {isSpinning ? "Spinning!" : "Spin"}
+            {isSpinning ? "Spinning..." : "Spin"}
           </Button>
         </Box>
-      </div>
+      </>
     );
   }
 
