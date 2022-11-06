@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { magicBallContext, useMagicBallDispatcher } from "./magicBallContext";
 import Box from "@mui/material/Box";
+import { Animate } from './Animate';
 
 export const ExcludeNumbers = () => {
   const { numbers } = useContext(magicBallContext);
@@ -17,33 +18,35 @@ export const ExcludeNumbers = () => {
         flexWrap: "wrap",
       }}
     >
-      {numbers.map((number) => (
-        <Box
-          style={{
-            backgroundColor: "blue",
-            color: "white",
-            textAlign: "center",
-            height: "36px",
-            width: "36px",
-            borderStyle: "1px black",
-            borderRadius: "25%",
-            margin: "8px",
-          }}
-          key={number}
-        >
-          {number}
-          <div
+      {numbers.map((number, idx) => (
+        <Animate key={number} order={idx}>
+          <Box
             style={{
-              backgroundColor: "red",
-              height: "20px",
-              width: "20px",
-              borderRadius: "50%",
+              backgroundColor: "blue",
+              color: "white",
+              textAlign: "center",
+              height: "36px",
+              width: "36px",
+              borderStyle: "1px black",
+              borderRadius: "25%",
+              margin: "8px",
+              cursor: "pointer",
             }}
             onClick={() => handleRemoveNumber(number)}
           >
-            x
-          </div>
-        </Box>
+            {number}
+            <div
+              style={{
+                backgroundColor: "red",
+                height: "20px",
+                width: "20px",
+                borderRadius: "50%",
+              }}
+            >
+              x
+            </div>
+          </Box>
+        </Animate>
       ))}
     </div>
   );
