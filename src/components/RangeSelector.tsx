@@ -2,8 +2,12 @@ import { useState, useContext, ChangeEvent } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import EastIcon from "@mui/icons-material/East";
-import { useMagicBallDispatcher, magicBallContext } from "./magicBallContext";
+import {
+  useMagicBallDispatcher,
+  magicBallContext,
+} from "../state/magicBallContext";
 import { ExcludeNumbers } from "./ExcludeNumbers";
+import { setCache } from "../services/cacheService";
 
 interface IRangeSelector {
   goNext: () => void;
@@ -35,7 +39,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
     if (start >= end) {
       setError("Error: starting number should be less than ending number");
     } else {
-      localStorage.setItem("numbers", JSON.stringify(numbers));
+      setCache(numbers);
       goNext();
     }
   };

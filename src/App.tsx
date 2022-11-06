@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { RangeSelector } from "./components/RangeSelector";
 import { MagicBall } from "./components/MagicBall";
-import { MagicBallProvider } from "./components/magicBallContext";
+import { MagicBallProvider } from "./state/magicBallContext";
+import { getCache } from "./services/cacheService";
 
 enum Steps {
   SELECT_RANGE,
@@ -9,9 +10,8 @@ enum Steps {
 }
 
 function App() {
-  const hasSession = localStorage.getItem("numbers");
   const [state, setState] = useState(
-    hasSession ? Steps.RANDOM_NUM_GENERATOR : Steps.SELECT_RANGE
+    getCache() ? Steps.RANDOM_NUM_GENERATOR : Steps.SELECT_RANGE
   );
 
   return (

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { magicBallContext, useMagicBallDispatcher } from "./magicBallContext";
+import { magicBallContext, useMagicBallDispatcher } from "../state/magicBallContext";
 import Box from "@mui/material/Box";
 import { Animate } from "./Animate";
 

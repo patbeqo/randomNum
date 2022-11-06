@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { BackButton } from "./BackButton";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useMagicBallDispatcher, magicBallContext } from "./magicBallContext";
+import { useMagicBallDispatcher, magicBallContext } from "../state/magicBallContext";
 
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);

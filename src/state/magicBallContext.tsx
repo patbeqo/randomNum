@@ -4,8 +4,9 @@ import React, {
   useState,
   useCallback,
   useEffect,
-  useRef,
 } from "react";
+
+import { getCache, clearCache, setCache } from "../services/cacheService";
 
 export type RangeType = {
   start: number;
@@ -42,21 +43,15 @@ export const MagicBallProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const hasSession = useRef<boolean>(false);
   const [range, setRange] = useState<RangeType>(INITIAL_RANGE);
 
   const [numbers, setNumbers] = useState<number[]>(() => {
-    let data = localStorage.getItem("numbers");
-    if (data != null) {
-      hasSession.current = true;
-      return Object.values(JSON.parse(data));
-    } else {
-      return buildNumbers(range);
-    }
+    const numbers = getCache();
+    return numbers ?? buildNumbers(range);
   });
 
   useEffect(() => {
-    if (!localStorage.getItem("numbers")) {
+    if (!getCache()) {
       setNumbers(buildNumbers(range));
     }
   }, [range]);
@@ -89,7 +84,7 @@ export const useMagicBallDispatcher = (): IUseMagicBallContext => {
   );
 
   const clearData = useCallback(() => {
-    localStorage.removeItem("numbers");
+    clearCache();
     setNumbersBase(buildNumbers(INITIAL_RANGE));
     setRangeBase(INITIAL_RANGE);
   }, [setRangeBase, setNumbersBase]);
@@ -99,7 +94,7 @@ export const useMagicBallDispatcher = (): IUseMagicBallContext => {
       setNumbersBase(numbers);
 
       if (updateCache) {
-        localStorage.setItem("numbers", JSON.stringify(numbers));
+        setCache(numbers);
       }
     },
     [setNumbersBase]
