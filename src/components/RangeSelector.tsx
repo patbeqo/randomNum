@@ -14,6 +14,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
   const { setRange } = useMagicBallDispatcher();
   const {
     range: { start, end },
+    numbers,
   } = useContext(magicBallContext);
 
   const setStartNumber = (
@@ -34,6 +35,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
     if (start >= end) {
       setError("Error: starting number should be less than ending number");
     } else {
+      localStorage.setItem("numbers", JSON.stringify(numbers));
       goNext();
     }
   };

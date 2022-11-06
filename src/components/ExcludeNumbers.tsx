@@ -1,14 +1,17 @@
 import { useContext } from "react";
 import { magicBallContext, useMagicBallDispatcher } from "./magicBallContext";
 import Box from "@mui/material/Box";
-import { Animate } from './Animate';
+import { Animate } from "./Animate";
 
 export const ExcludeNumbers = () => {
   const { numbers } = useContext(magicBallContext);
   const { setNumbers } = useMagicBallDispatcher();
 
   const handleRemoveNumber = (numberToRemove: number) => {
-    setNumbers(numbers.filter((number) => number !== numberToRemove));
+    setNumbers(
+      numbers.filter((number) => number !== numberToRemove),
+      false
+    );
   };
 
   return (

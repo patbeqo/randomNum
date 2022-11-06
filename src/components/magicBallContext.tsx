@@ -73,7 +73,7 @@ export const MagicBallProvider = ({
 interface IUseMagicBallContext {
   setRange: (start: number, end: number) => void;
   clearData: () => void;
-  setNumbers: (numbers: number[]) => void;
+  setNumbers: (numbers: number[], updateCache?: boolean) => void;
 }
 
 export const useMagicBallDispatcher = (): IUseMagicBallContext => {
@@ -90,13 +90,17 @@ export const useMagicBallDispatcher = (): IUseMagicBallContext => {
 
   const clearData = useCallback(() => {
     localStorage.removeItem("numbers");
+    setNumbersBase(buildNumbers(INITIAL_RANGE));
     setRangeBase(INITIAL_RANGE);
-  }, [setRangeBase]);
+  }, [setRangeBase, setNumbersBase]);
 
   const setNumbers = useCallback(
-    (numbers: number[]) => {
-      localStorage.setItem("numbers", JSON.stringify(numbers));
+    (numbers: number[], updateCache: boolean = true) => {
       setNumbersBase(numbers);
+
+      if (updateCache) {
+        localStorage.setItem("numbers", JSON.stringify(numbers));
+      }
     },
     [setNumbersBase]
   );
