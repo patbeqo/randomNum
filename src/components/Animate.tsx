@@ -21,13 +21,17 @@ export const Animate = ({ children, order }: IAnimate) => {
         const deltaX = oldDimensions.current.horizontal - newHorizontal;
 
         requestAnimationFrame(() => {
-          ref.current!.style.transform = `translateY(${deltaY}px) translateX(${deltaX}px)`;
-          ref.current!.style.transition = "transform 0s";
+          if (ref.current) {
+            ref.current.style.transform = `translateY(${deltaY}px) translateX(${deltaX}px)`;
+            ref.current.style.transition = "transform 0s";
 
-          requestAnimationFrame(() => {
-            ref.current!.style.transform = "";
-            ref.current!.style.transition = "transform 500ms";
-          });
+            requestAnimationFrame(() => {
+              if (ref.current) {
+                ref.current.style.transform = "";
+                ref.current.style.transition = "transform 500ms";
+              }
+            });
+          }
         });
       }
 

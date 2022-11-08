@@ -1,9 +1,13 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { BackButton } from "./BackButton";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useMagicBallDispatcher, magicBallContext } from "../state/magicBallContext";
+import {
+  useMagicBallDispatcher,
+  magicBallContext,
+} from "../state/magicBallContext";
+import { setCache } from "../services/cacheService";
 
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
@@ -19,6 +23,11 @@ export const MagicBall = ({ goBack }: IMagicBall) => {
   const [numberToDisplay, setNumberToDisplay] = useState<number | undefined>();
   const { clearData, setNumbers } = useMagicBallDispatcher();
   const { numbers } = useContext(magicBallContext);
+
+  useEffect(() => {
+    setCache(numbers);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleBackClick = () => {
     clearData();

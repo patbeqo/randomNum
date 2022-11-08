@@ -1,13 +1,18 @@
-import { useState, useContext, ChangeEvent } from "react";
+import { useState, ChangeEvent, useRef } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import EastIcon from "@mui/icons-material/East";
 import {
   useMagicBallDispatcher,
-  magicBallContext,
+  buildNumbers,
 } from "../state/magicBallContext";
 import { ExcludeNumbers } from "./ExcludeNumbers";
-import { setCache } from "../services/cacheService";
+export const INITIAL_RANGE = {
+  start: 1,
+  end: 10,
+};
+
+export type RangeType = typeof INITIAL_RANGE;
 
 interface IRangeSelector {
   goNext: () => void;
@@ -15,31 +20,33 @@ interface IRangeSelector {
 
 export const RangeSelector = ({ goNext }: IRangeSelector) => {
   const [error, setError] = useState<string | undefined>();
-  const { setRange } = useMagicBallDispatcher();
-  const {
-    range: { start, end },
-    numbers,
-  } = useContext(magicBallContext);
+  const range = useRef<RangeType>(INITIAL_RANGE);
+  const { setNumbers } = useMagicBallDispatcher();
+
+  const { start, end } = range.current;
 
   const setStartNumber = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setError(undefined);
-    setRange(parseInt(e.target.value), end);
+    const newRange = { ...range.current, start: parseInt(e.target.value) };
+    setNumbers(buildNumbers(newRange), false);
+    range.current = newRange;
   };
 
   const setEndNumber = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setError(undefined);
-    setRange(start, parseInt(e.target.value));
+    const newRange = { ...range.current, end: parseInt(e.target.value) };
+    setNumbers(buildNumbers(newRange), false);
+    range.current = newRange;
   };
 
   const handleContinue = () => {
     if (start >= end) {
       setError("Error: starting number should be less than ending number");
     } else {
-      setCache(numbers);
       goNext();
     }
   };
@@ -52,7 +59,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
       }}
     >
       <h3 style={{ textAlign: "center" }}>
-        Please enter a range of number to begin
+        Please enter a range of numbers to begin
       </h3>
       <div style={{ display: "flex", marginBottom: "24px" }}>
         <TextField
@@ -63,7 +70,6 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
               min: 1,
             },
           }}
-          value={start}
           onChange={setStartNumber}
           label="start"
         />
@@ -74,7 +80,6 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
               min: 2,
             },
           }}
-          value={end}
           onChange={setEndNumber}
           label="end"
         />
@@ -85,7 +90,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
 
       <ExcludeNumbers />
       <Button
-        style={{ width: "100%", height: "48px" }}
+        style={{ width: "100%", height: "48px", marginTop: "24px" }}
         variant="outlined"
         endIcon={<EastIcon />}
         disabled={!!error}
