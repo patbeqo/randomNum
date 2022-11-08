@@ -1,7 +1,9 @@
-import { useState, ChangeEvent, useRef } from "react";
+import { useState, ChangeEvent, useRef, useTransition } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import EastIcon from "@mui/icons-material/East";
+import LinearProgress from "@mui/material/LinearProgress";
+
 import {
   useMagicBallDispatcher,
   buildNumbers,
@@ -22,6 +24,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
   const [error, setError] = useState<string | undefined>();
   const range = useRef<RangeType>(INITIAL_RANGE);
   const { setNumbers } = useMagicBallDispatcher();
+  const [isPending, startTransition] = useTransition();
 
   const { start, end } = range.current;
 
@@ -30,8 +33,10 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
   ) => {
     setError(undefined);
     const newRange = { ...range.current, start: parseInt(e.target.value) };
-    setNumbers(buildNumbers(newRange), false);
     range.current = newRange;
+    startTransition(() => {
+      setNumbers(buildNumbers(newRange), false);
+    });
   };
 
   const setEndNumber = (
@@ -39,8 +44,10 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
   ) => {
     setError(undefined);
     const newRange = { ...range.current, end: parseInt(e.target.value) };
-    setNumbers(buildNumbers(newRange), false);
     range.current = newRange;
+    startTransition(() => {
+      setNumbers(buildNumbers(newRange), false);
+    });
   };
 
   const handleContinue = () => {
@@ -87,7 +94,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
       {error ? (
         <p style={{ color: "red", marginBottom: "16px" }}>{error}</p>
       ) : undefined}
-
+      {isPending ? <LinearProgress color="secondary" /> : undefined}
       <ExcludeNumbers />
       <Button
         style={{ width: "100%", height: "48px", marginTop: "24px" }}
