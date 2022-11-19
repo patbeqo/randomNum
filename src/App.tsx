@@ -1,31 +1,53 @@
-import React, { useState } from "react";
-import { RangeSelector } from "./components/RangeSelector";
-import { MagicBall } from "./components/MagicBall";
-import { MagicBallProvider } from "./state/magicBallContext";
+import { lazy, Suspense } from "react";
 import { getCache } from "./services/cacheService";
+import { Routes, Route, useNavigate, redirect } from "react-router-dom";
 
-enum Steps {
-  SELECT_RANGE,
-  RANDOM_NUM_GENERATOR,
-}
+const RangeSelector = lazy(() =>
+  import(
+    /* webpackChunkName: "RangeSelector" */ "./components/RangeSelector"
+  ).then((module) => ({
+    default: module.RangeSelector,
+  }))
+);
+
+const MagicBall = lazy(() =>
+  import(/* webpackChunkName: "MagicBall" */ "./components/MagicBall").then(
+    (module) => ({
+      default: module.MagicBall,
+    })
+  )
+);
 
 function App() {
-  const [state, setState] = useState(
-    getCache() ? Steps.RANDOM_NUM_GENERATOR : Steps.SELECT_RANGE
-  );
+  const navigate = useNavigate();
+
+  if (getCache()) {
+    redirect("/spin");
+  }
 
   return (
     <div className="App">
       <h1 style={{ textAlign: "center", color: "purple" }}>
         Patrik's magic number ball
       </h1>
-      <MagicBallProvider>
-        {state === Steps.SELECT_RANGE ? (
-          <RangeSelector goNext={() => setState((prev) => prev + 1)} />
-        ) : (
-          <MagicBall goBack={() => setState((prev) => prev - 1)} />
-        )}
-      </MagicBallProvider>
+      <Routes>
+        <Route
+          index
+          element={
+            <Suspense fallback={null}>
+              <RangeSelector goNext={() => navigate("/spin")} />
+            </Suspense>
+          }
+        />
+        <Route
+          path="spin"
+          element={
+            <Suspense fallback={null}>
+              <MagicBall goBack={() => navigate("/")} />
+            </Suspense>
+          }
+        />
+      </Routes>
     </div>
   );
 }
