@@ -1,6 +1,5 @@
 import { lazy, Suspense } from "react";
-import { getCache } from "./services/cacheService";
-import { Routes, Route, useNavigate, redirect } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 
 const RangeSelector = lazy(() =>
   import(
@@ -20,10 +19,6 @@ const MagicBall = lazy(() =>
 
 function App() {
   const navigate = useNavigate();
-
-  if (getCache()) {
-    redirect("/spin");
-  }
 
   return (
     <div className="App">
