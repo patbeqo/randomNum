@@ -1,49 +1,34 @@
-import { lazy, Suspense } from "react";
+import { Suspense } from "react";
 import { getCache } from "./services/cacheService";
-import { Routes, Route, useNavigate, redirect } from "react-router-dom";
-
-const RangeSelector = lazy(() =>
-  import(
-    /* webpackChunkName: "RangeSelector" */ "./components/RangeSelector"
-  ).then((module) => ({
-    default: module.RangeSelector,
-  }))
-);
-
-const MagicBall = lazy(() =>
-  import(/* webpackChunkName: "MagicBall" */ "./components/MagicBall").then(
-    (module) => ({
-      default: module.MagicBall,
-    })
-  )
-);
+import { Routes, Route, redirect } from "react-router-dom";
+import { HomePage } from "./pages/home";
+import { LazyRangeSelector, LazyMagicBall } from "./pages/randomNumber/";
+import { SpinRandomNumber } from "./routes";
+import { Template } from "./pages/home/Template";
 
 function App() {
-  const navigate = useNavigate();
-
   if (getCache()) {
-    redirect("/spin");
+    redirect(SpinRandomNumber);
   }
 
   return (
     <div className="App">
-      <h1 style={{ textAlign: "center", color: "purple" }}>
-        Patrik's magic number ball
-      </h1>
+      <Template />
       <Routes>
+        <Route index element={<HomePage />} />
         <Route
-          index
+          path="number"
           element={
             <Suspense fallback={null}>
-              <RangeSelector goNext={() => navigate("/spin")} />
+              <LazyRangeSelector />
             </Suspense>
           }
         />
         <Route
-          path="spin"
+          path="number/spin"
           element={
             <Suspense fallback={null}>
-              <MagicBall goBack={() => navigate("/")} />
+              <LazyMagicBall />
             </Suspense>
           }
         />

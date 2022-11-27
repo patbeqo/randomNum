@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
-import { INITIAL_RANGE, RangeType } from "../components/RangeSelector";
+import {
+  INITIAL_RANGE,
+  RangeType,
+} from "../pages/randomNumber/components/RangeSelector";
 
 import { getCache, clearCache, setCache } from "../services/cacheService";
 

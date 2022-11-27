@@ -6,12 +6,14 @@ import { MagicBallProvider } from "./state/magicBallContext";
 import { BrowserRouter } from "react-router-dom";
 
 const rootElement = document.getElementById("root");
-ReactDOM.createRoot(rootElement).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <MagicBallProvider>
-        <App />
-      </MagicBallProvider>
-    </BrowserRouter>
-  </React.StrictMode>
-);
+if (rootElement) {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <MagicBallProvider>
+          <App />
+        </MagicBallProvider>
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+}

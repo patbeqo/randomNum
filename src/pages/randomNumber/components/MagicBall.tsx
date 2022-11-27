@@ -1,38 +1,28 @@
 import { useState, useContext, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import { BackButton } from "./BackButton";
 import CircularProgress from "@mui/material/CircularProgress";
 import {
   useMagicBallDispatcher,
   magicBallContext,
-} from "../state/magicBallContext";
-import { setCache } from "../services/cacheService";
+} from "../../../state/magicBallContext";
+import { setCache } from "../../../services/cacheService";
 
 function getRandomInt(max: number) {
   return Math.floor(Math.random() * max);
 }
 
-interface IMagicBall {
-  goBack: () => void;
-}
-
-export const MagicBall = ({ goBack }: IMagicBall) => {
+export const MagicBall = () => {
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const [numberToDisplay, setNumberToDisplay] = useState<number | undefined>();
-  const { clearData, setNumbers } = useMagicBallDispatcher();
+  const { setNumbers } = useMagicBallDispatcher();
   const { numbers } = useContext(magicBallContext);
 
   useEffect(() => {
     setCache(numbers);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const handleBackClick = () => {
-    clearData();
-    goBack();
-  };
 
   const spinBall = () => {
     setIsSelected(false);
@@ -60,18 +50,12 @@ export const MagicBall = ({ goBack }: IMagicBall) => {
   };
 
   if (numbers.length === 0) {
-    return (
-      <>
-        <BackButton handleBackClick={handleBackClick} />
-        <h3 style={{ textAlign: "center" }}>Thank you for playing!</h3>
-      </>
-    );
+    return <h3 style={{ textAlign: "center" }}>Thank you for playing!</h3>;
   }
 
   if (numbers) {
     return (
       <>
-        <BackButton handleBackClick={handleBackClick} />
         <div>
           <p style={{ textAlign: "center" }}>{`Remaining numbers: ${numbers.map(
             (number) => number

@@ -3,11 +3,12 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import EastIcon from "@mui/icons-material/East";
 import LinearProgress from "@mui/material/LinearProgress";
-
+import { useNavigate } from "react-router-dom";
+import { SpinRandomNumber } from "../../../routes";
 import {
   useMagicBallDispatcher,
   buildNumbers,
-} from "../state/magicBallContext";
+} from "../../../state/magicBallContext";
 import { ExcludeNumbers } from "./ExcludeNumbers";
 export const INITIAL_RANGE = {
   start: 1,
@@ -16,17 +17,14 @@ export const INITIAL_RANGE = {
 
 export type RangeType = typeof INITIAL_RANGE;
 
-interface IRangeSelector {
-  goNext: () => void;
-}
-
-export const RangeSelector = ({ goNext }: IRangeSelector) => {
+export const RangeSelector = () => {
   const [error, setError] = useState<string | undefined>();
   const range = useRef<RangeType>(INITIAL_RANGE);
   const { setNumbers } = useMagicBallDispatcher();
   const [isPending, startTransition] = useTransition();
 
   const { start, end } = range.current;
+  const navigate = useNavigate();
 
   const setStartNumber = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,7 +52,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
     if (start >= end) {
       setError("Error: starting number should be less than ending number");
     } else {
-      goNext();
+      navigate(SpinRandomNumber);
     }
   };
 
@@ -84,7 +82,7 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
           type="number"
           InputProps={{
             inputProps: {
-              min: 2,
+              min: 1,
             },
           }}
           onChange={setEndNumber}
@@ -93,8 +91,8 @@ export const RangeSelector = ({ goNext }: IRangeSelector) => {
       </div>
       {error ? (
         <p style={{ color: "red", marginBottom: "16px" }}>{error}</p>
-      ) : undefined}
-      {isPending ? <LinearProgress color="secondary" /> : undefined}
+      ) : null}
+      {isPending ? <LinearProgress color="secondary" /> : null}
       <ExcludeNumbers />
       <Button
         style={{ width: "100%", height: "48px", marginTop: "24px" }}
